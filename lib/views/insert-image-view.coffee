@@ -174,7 +174,7 @@ class InsertImageView extends View
     try
       if config.get("postAssetFolder")
         destFile = path.join(path.dirname(@editor.getPath()),
-                             templateHelper.parseFileSlug(@editor.getPath()),
+                             path.basename(@editor.getPath(), path.extname(@editor.getPath())),
                              destFileName)
       else
         destFile = path.join(@siteLocalDir(), @siteImagesDir(), destFileName)

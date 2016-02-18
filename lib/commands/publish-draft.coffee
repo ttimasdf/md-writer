@@ -25,7 +25,8 @@ class PublishDraft
         postassetfolder = path.join(path.dirname(@draftPath),
                                     path.basename(@draftPath, @getExtension()))
         fs.moveSync(postassetfolder,
-                    path.join(path.dirname(@postPath), @getSlug())) if fs.existsSync(postassetfolder)
+                    path.join(path.dirname(@postPath),
+                              path.basename(@postPath, @getExtension()))) if fs.existsSync(postassetfolder)
         @editor.saveAs(@postPath)
         shell.moveItemToTrash(@draftPath) if @draftPath
       catch error
