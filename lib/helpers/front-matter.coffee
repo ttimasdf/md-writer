@@ -1,4 +1,3 @@
-os = require "os"
 yaml = require "js-yaml"
 
 FRONT_MATTER_REGEX = ///
@@ -53,6 +52,10 @@ class FrontMatter
 
   get: (field) -> @content[field]
 
+  getArray: (field) ->
+    @normalizeField(field)
+    @content[field]
+
   set: (field, content) -> @content[field] = content
 
   setIfExists: (field, content) ->
@@ -63,9 +66,9 @@ class FrontMatter
   getContentText: ->
     text = yaml.safeDump(@content)
     if @leadingFence
-      ["---", "#{text}---", ""].join(os.EOL)
+      ["---", "#{text}---", ""].join("\n")
     else
-      ["#{text}---", ""].join(os.EOL)
+      ["#{text}---", ""].join("\n")
 
   save: ->
     @_findFrontMatter (match) => match.replace(@getContentText())
