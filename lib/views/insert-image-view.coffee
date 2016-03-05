@@ -151,7 +151,7 @@ class InsertImageView extends View
     imgSource = @imageEditor.getText().trim()
     img =
       rawSrc: imgSource,
-      src: @generateImageSrc(imgSource)
+      src: @slugize(@generateImageSrc(imgSource))
       relativeFileSrc: @generateRelativeImageSrc(imgSource, @currentFileDir())
       relativeSiteSrc: @generateRelativeImageSrc(imgSource, @siteLocalDir())
       alt: @titleEditor.getText()
@@ -171,7 +171,7 @@ class InsertImageView extends View
     return callback() if utils.isUrl(file) || !fs.existsSync(file)
 
     try
-      destFile = path.join(@siteLocalDir(), @siteImagesDir(), path.basename(file))
+      destFile = @slugize(path.join(@siteLocalDir(), @siteImagesDir(), path.basename(file)))
 
       if fs.existsSync(destFile)
         atom.confirm
@@ -227,3 +227,11 @@ class InsertImageView extends View
     return "" unless file
     return file if utils.isUrl(file)
     return path.relative(basePath || "~", file)
+
+  # sluggize image name (reserve ext name)
+  slugize: (src) ->
+    return utils.slugize(src).substring(0,src.lastIndexOf('.')) +
+           path.extname(src) if src.lastIndexOf('/') < 0
+    return src.substring(0,src.lastIndexOf('/')+1) +
+           utils.slugize(src.substring(src.lastIndexOf('/')+1, src.lastIndexOf('.'))) +
+           path.extname(src)
