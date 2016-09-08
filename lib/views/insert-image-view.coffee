@@ -232,6 +232,10 @@ class InsertImageView extends View
       title = utils.slugize(title, config.get('slugSeparator'))
       filename = "#{title}#{extension}"
 
+    if config.get("postAssetFolder")
+      dirpath = @editor.getPath()
+      extension = path.extname(dirpath)
+      return path.join(@currentFileDir(), path.basename(dirpath, extension), filename)
     path.join(@siteLocalDir(), @siteImagesDir(), filename)
 
   # try to resolve file to a valid src that could be displayed
@@ -251,6 +255,7 @@ class InsertImageView extends View
   _generateImageSrc: (file) ->
     return "" unless file
     return file if utils.isUrl(file)
+    return path.basename(file) if config.get('postAssetFolder')
     return path.relative(@currentFileDir(), file) if config.get('relativeImagePath')
     return path.relative(@siteLocalDir(), file) if @isInSiteDir(file)
     return path.join("/", @siteImagesDir(), path.basename(file))

@@ -2,6 +2,7 @@
 fs = require "fs-plus"
 path = require "path"
 shell = require "shell"
+mv = require "mv"
 
 config = require "../config"
 utils = require "../utils"
@@ -24,6 +25,18 @@ class PublishDraft
       try
         @editor.saveAs(@postPath)
         shell.moveItemToTrash(@draftPath) if @draftPath
+        if config.get("postAssetFolder")
+          extname = path.extname(@draftPath)
+          origAssetPath = path.join(path.dirname(@draftPath), path.basename(@draftPath, extname))
+          destAssetPath = path.join(path.dirname(@postPath), path.basename(@postPath, @getExtension()))
+          if fs.existsSync(origAssetPath)
+            mv(origAssetPath, destAssetPath, {mkdirp: true}, (err) =>
+              if err
+                atom.confirm
+                  message: "[Markdown Writer] Error!"
+                  detailedMessage: "Asset Folder:\nERROR: #{err.code}\n\ndestination: #{err.dest}"
+                  buttons: ['OK']
+            )
       catch error
         atom.confirm
           message: "[Markdown Writer] Error!"
